@@ -55,3 +55,4 @@ def edit_entry(entry_id=None):
          else:
             errors = form.errors
    return render_template("entry_form.html", form=form, errors=errors)
+# Do tad wszystko pracuje
