@@ -1,0 +1,20 @@
+mkdir python-virtual-environments
+cd python-virtual-environments
+
+git remote add origin https://github.com/KIWI1987/16_Blog.git
+---------------------------------------------------------------
+python -m venv venv
+ls
+source venv/bin/activate
+venv\Scripts\activate
+
+#pip freeze > requirements.txt
+#pip install -r requirements.txt
+---------------------------------------------------------------
+FLASK_APP=blog flask db init
+flask db migrate -m "Add Post table"
+flask db upgrade
+
+#pip install flask-shell-ipython
+---------------------------------------------------------------
+flask shell
