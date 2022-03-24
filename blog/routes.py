@@ -38,8 +38,8 @@ def create_entry():
    return render_template("entry_form.html", form=form, errors=errors)
 
 @app.route("/edit-entry/<int:entry_id>", methods=["GET", "POST"])
-@app.route("/edit-entry", methods=["GET", "POST"])
-@login_required
+@app.route("/edit-entry/", methods=["GET", "POST"])
+#@login_required
 def edit_entry(entry_id=None):
    errors = None
    if entry_id:
@@ -50,8 +50,8 @@ def edit_entry(entry_id=None):
             form.populate_obj(entry)
             db.session.commit()
          else:
-            errors = form.errors
-         return redirect(url_for("index"))
+            rrors = form.errors
+         return render_template("entry_form.html", form=form, errors=errors)
    else:
       form = EntryForm()
       if request.method == 'POST':
@@ -63,10 +63,9 @@ def edit_entry(entry_id=None):
             )
             db.session.add(entry)
             db.session.commit()
-         else:
-            errors = form.errors
-         flash('success')
-         return redirect(url_for("index"))
+      else:
+         errors = form.errors
+      return render_template("entry_form.html", form=form, errors=errors)
 
    return render_template("entry_form.html", form=form, errors=errors)
 # Do tad wszystko pracuje
@@ -96,7 +95,7 @@ def logout():
 
 
 @app.route("/drafts/", methods=['GET'])
-@login_required
+#@login_required
 def list_drafts():
    drafts = Entry.query.filter_by(is_published=False).order_by(Entry.pub_date.desc())
    return render_template("drafts.html", drafts=drafts)
