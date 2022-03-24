@@ -39,7 +39,7 @@ def create_entry():
 
 @app.route("/edit-entry/<int:entry_id>", methods=["GET", "POST"])
 @app.route("/edit-entry/", methods=["GET", "POST"])
-#@login_required
+@login_required
 def edit_entry(entry_id=None):
    errors = None
    if entry_id:
@@ -95,7 +95,7 @@ def logout():
 
 
 @app.route("/drafts/", methods=['GET'])
-#@login_required
+@login_required
 def list_drafts():
    drafts = Entry.query.filter_by(is_published=False).order_by(Entry.pub_date.desc())
    return render_template("drafts.html", drafts=drafts)
