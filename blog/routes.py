@@ -94,8 +94,14 @@ def logout():
    return redirect(url_for('index'))
 
 
-@app.route("/drafts/", methods=['GET'])
-@login_required
+@app.route("/drafts/", methods=['GET', 'POST'])
+#@login_required
 def list_drafts():
-   drafts = Entry.query.filter_by(is_published=False).order_by(Entry.pub_date.desc())
-   return render_template("drafts.html", drafts=drafts)
+    drafts = Entry.query.filter_by(is_published=False).order_by(Entry.pub_date.desc())
+    if request.method == 'POST':
+        data = request.form
+        entry_id = data.get('button_entry_id')
+        delete_entry(entry_id)
+        return redirect(url_for("index"))
+    
+    return render_template("drafts.html", drafts=drafts)
