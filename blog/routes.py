@@ -1,6 +1,6 @@
 # blog/routes.py
 
-from flask import render_template, request
+from flask import render_template, request, make_response ,session, flash, redirect, url_for 
 from blog import app
 from blog.models import Entry, db
 from blog.forms import EntryForm, LoginForm
@@ -94,3 +94,9 @@ def logout():
        flash('You are now logged out.', 'success')
 
    return render_template("login_form.html", form=form, errors=errors)
+
+@app.route('/cookie/')
+def cookie():
+    res = make_response("Setting a cookie")
+    res.set_cookie('foo', 'bar', max_age=60*60*24*365*2)
+    return res
