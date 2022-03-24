@@ -14,28 +14,29 @@ def login_required(view_func):
       return redirect(url_for('login', next=request.path))
    return check_permissions
 
+def delete_entry(entry_id):
+    delete_draft = Entry.query.get(entry_id)
+    db.session.delete(delete_draft)
+    db.session.commit()
+
 @app.route("/")
-#@login_required
 def index():
    all_posts = Entry.query.filter_by(is_published=True).order_by(Entry.pub_date.desc())
    return render_template("homepage.html", all_posts=all_posts)
 
-@app.route("/edit-post_not_use/", methods=["GET", "POST"])
-def create_entry():
-   form = EntryForm()
-   errors = None
+
+@app.route("/drafts/", methods=['GET', 'POST'])
+@login_required
+def list_drafts():
+   drafts = Entry.query.filter_by(is_published=False).order_by(Entry.pub_date.desc())
    if request.method == 'POST':
-      if form.validate_on_submit():
-         entry = Entry(
-            title=form.title.data,
-            body=form.body.data,
-            is_published=form.is_published.data
-         )
-         db.session.add(entry)
-         db.session.commit()
-      else:
-         errors = form.errors
-   return render_template("entry_form.html", form=form, errors=errors)
+      data = request.form
+      entry_id = data.get('button_entry_id')
+      delete_entry(entry_id)
+      return redirect(url_for("index"))
+    
+   return render_template("drafts.html", drafts=drafts)
+
 
 @app.route("/edit-entry/<int:entry_id>", methods=["GET", "POST"])
 @app.route("/edit-entry/", methods=["GET", "POST"])
@@ -51,7 +52,7 @@ def edit_entry(entry_id=None):
             db.session.commit()
          else:
             rrors = form.errors
-         return render_template("entry_form.html", form=form, errors=errors)
+         return redirect(url_for("index"))
    else:
       form = EntryForm()
       if request.method == 'POST':
@@ -63,11 +64,11 @@ def edit_entry(entry_id=None):
             )
             db.session.add(entry)
             db.session.commit()
-      else:
-         errors = form.errors
-      return render_template("entry_form.html", form=form, errors=errors)
+         else:
+            errors = form.errors
+         return redirect(url_for("index"))
 
-   return render_template("entry_form.html", form=form, errors=errors)
+      return render_template("entry_form.html", form=form, errors=errors)
 # Do tad wszystko pracuje
 
 @app.route("/login/", methods=['GET', 'POST'])
@@ -91,17 +92,5 @@ def logout():
    if request.method == 'POST':
        session.clear()
        flash('You are now logged out.', 'success')
-   return redirect(url_for('index'))
 
-
-@app.route("/drafts/", methods=['GET', 'POST'])
-#@login_required
-def list_drafts():
-    drafts = Entry.query.filter_by(is_published=False).order_by(Entry.pub_date.desc())
-    if request.method == 'POST':
-        data = request.form
-        entry_id = data.get('button_entry_id')
-        delete_entry(entry_id)
-        return redirect(url_for("index"))
-    
-    return render_template("drafts.html", drafts=drafts)
+   return render_template("login_form.html", form=form, errors=errors)
