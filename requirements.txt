@@ -8,5 +8,5 @@ Flask-WTF
 WTForms
 faker
 virtualenv
-
+functools
 
